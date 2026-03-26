@@ -1,0 +1,69 @@
+---
+import Base from '@/layouts/Base.astro'
+import InstrumentCard from '@/components/InstrumentCard.astro'
+import CategoryFilter from '@/components/CategoryFilter.astro'
+import { getPayloadClient } from '@/lib/payload'
+
+const payload = await getPayloadClient()
+
+const { docs: instruments } = await payload.find({
+  collection: 'instruments',
+  sort: 'order',
+  limit: 500,
+  depth: 1,
+})
+
+const { docs: categories } = await payload.find({
+  collection: 'categories',
+  sort: 'order',
+  limit: 100,
+})
+
+const categoryList = categories.map((cat) => ({
+  slug: cat.slug,
+  name: cat.name,
+}))
+---
+
+<Base
+  title="Vibe Room"
+  description="Коллекция музыкального оборудования и инструментов — гитары, усилители, педали эффектов"
+>
+  <CategoryFilter categories={categoryList} />
+  <div class="grid" id="instruments-grid">
+    {instruments.map((inst) => {
+      const category = typeof inst.category === 'object' ? inst.category : null
+      const firstImage = Array.isArray(inst.images) && inst.images.length > 0
+        ? (typeof inst.images[0] === 'object' ? inst.images[0] : null)
+        : null
+
+      return (
+        <InstrumentCard
+          title={inst.title}
+          slug={inst.slug}
+          categoryName={category?.name || ''}
+          categorySlug={category?.slug || ''}
+          imageUrl={firstImage?.sizes?.card?.url || firstImage?.url}
+          imageAlt={firstImage?.alt}
+          year={inst.year || undefined}
+          country={inst.country || undefined}
+          weight={inst.weight || undefined}
+          status={inst.status as 'available' | 'archive'}
+        />
+      )
+    })}
+  </div>
+</Base>
+
+<style>
+  .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; padding: 20px 40px 40px;
+  }
+  @media (max-width: 768px) {
+    .grid { grid-template-columns: repeat(2, 1fr); padding: 16px 20px 32px; gap: 12px; }
+  }
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>

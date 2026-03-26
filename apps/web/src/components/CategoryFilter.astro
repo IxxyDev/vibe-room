@@ -1,0 +1,130 @@
+---
+interface Category {
+  slug: string
+  name: string
+}
+
+interface Props {
+  categories: Category[]
+}
+
+const { categories } = Astro.props
+---
+
+<div class="catalog-controls" id="catalog-controls">
+  <div class="tabs-bar">
+    <button class="tab active" data-tab="available">В наличии</button>
+    <button class="tab" data-tab="archive">Архив</button>
+  </div>
+  <div class="filters">
+    <span class="filter-label">Категории</span>
+    <button class="filter-pill active" data-category="all">Все <span class="filter-count"></span></button>
+    {categories.map((cat) => (
+      <button class="filter-pill" data-category={cat.slug}>{cat.name} <span class="filter-count"></span></button>
+    ))}
+  </div>
+</div>
+
+<style>
+  .tabs-bar {
+    display: flex; padding: 0 40px; border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    padding: 14px 24px; font-size: 13px; font-weight: 500;
+    color: var(--cream-dim); letter-spacing: 0.5px; position: relative;
+    cursor: pointer; background: none; border: none; font-family: inherit;
+  }
+  .tab.active { color: var(--pink); }
+  .tab.active::after {
+    content: ''; position: absolute; bottom: 0; left: 24px; right: 24px;
+    height: 2px; background: var(--pink); box-shadow: 0 0 8px var(--pink-glow);
+  }
+  .filters {
+    padding: 20px 40px; display: flex; gap: 8px;
+    align-items: center; overflow-x: auto;
+  }
+  .filter-label {
+    font-size: 11px; color: var(--cream-dim); text-transform: uppercase;
+    letter-spacing: 1px; margin-right: 8px; white-space: nowrap;
+  }
+  .filter-pill {
+    padding: 6px 16px; border-radius: 20px; font-size: 12px;
+    border: 1px solid #ffffff0f; color: var(--cream-dim);
+    background: transparent; cursor: pointer; font-family: inherit;
+    white-space: nowrap; transition: all 0.2s;
+  }
+  .filter-pill.active {
+    border-color: var(--pink); color: var(--pink);
+    background: rgba(255, 61, 154, 0.06);
+  }
+  .filter-count { font-size: 10px; color: var(--teal); margin-left: 4px; }
+
+  @media (max-width: 768px) {
+    .tabs-bar { padding: 0 20px; }
+    .filters { padding: 16px 20px; }
+  }
+</style>
+
+<script>
+  function initCatalog() {
+    const controls = document.getElementById('catalog-controls')
+    const grid = document.getElementById('instruments-grid')
+    if (!controls || !grid) return
+
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-status]'))
+    const tabs = controls.querySelectorAll<HTMLButtonElement>('.tab')
+    const pills = controls.querySelectorAll<HTMLButtonElement>('.filter-pill')
+
+    let activeTab = 'available'
+    let activeCategory = 'all'
+
+    function updateView() {
+      const categoryCounts: Record<string, number> = {}
+
+      cards.forEach((card) => {
+        const status = card.dataset.status
+        const category = card.dataset.category
+        const matchesTab = status === activeTab
+        const matchesCategory = activeCategory === 'all' || category === activeCategory
+
+        card.style.display = matchesTab && matchesCategory ? '' : 'none'
+
+        if (status === activeTab) {
+          categoryCounts[category!] = (categoryCounts[category!] || 0) + 1
+        }
+      })
+
+      const totalForTab = cards.filter((c) => c.dataset.status === activeTab).length
+      pills.forEach((pill) => {
+        const cat = pill.dataset.category
+        const countEl = pill.querySelector('.filter-count')
+        if (!countEl) return
+        countEl.textContent = cat === 'all'
+          ? String(totalForTab)
+          : String(categoryCounts[cat!] || 0)
+      })
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => t.classList.remove('active'))
+        tab.classList.add('active')
+        activeTab = tab.dataset.tab!
+        updateView()
+      })
+    })
+
+    pills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        pills.forEach((p) => p.classList.remove('active'))
+        pill.classList.add('active')
+        activeCategory = pill.dataset.category!
+        updateView()
+      })
+    })
+
+    updateView()
+  }
+
+  initCatalog()
+</script>

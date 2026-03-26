@@ -1,0 +1,79 @@
+---
+interface Props {
+  title: string
+  slug: string
+  categoryName: string
+  categorySlug: string
+  imageUrl?: string
+  imageAlt?: string
+  year?: number
+  country?: string
+  weight?: number
+  status: 'available' | 'archive'
+}
+
+const { title, slug, categoryName, categorySlug, imageUrl, imageAlt, year, country, weight, status } = Astro.props
+---
+
+<a href={`/instrument/${slug}`} class="card" data-status={status} data-category={categorySlug}>
+  <div class="card-img">
+    {imageUrl
+      ? <img src={imageUrl} alt={imageAlt || title} loading="lazy" />
+      : <div class="card-img-placeholder">&#9835;</div>
+    }
+    <span class="card-category-badge">{categoryName}</span>
+  </div>
+  <div class="card-body">
+    <div class="card-title">{title}</div>
+    <div class="card-meta">
+      {year && <span class="card-meta-item"><span class="dot"></span>{year}</span>}
+      {country && <span class="card-meta-item"><span class="dot"></span>{country}</span>}
+      {weight && <span class="card-meta-item"><span class="dot"></span>{weight} kg</span>}
+    </div>
+  </div>
+</a>
+
+<style>
+  .card {
+    background: var(--bg-card); border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--border); transition: all 0.3s ease; display: block;
+  }
+  .card:hover {
+    border-color: rgba(255, 61, 154, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  }
+  .card-img {
+    aspect-ratio: 4/3; background: linear-gradient(135deg, #15151d, #1a1a24);
+    position: relative; overflow: hidden;
+  }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; }
+  .card-img-placeholder {
+    width: 100%; height: 100%; display: flex;
+    align-items: center; justify-content: center;
+    color: #ffffff0d; font-size: 48px;
+  }
+  .card-category-badge {
+    position: absolute; top: 12px; left: 12px;
+    font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--teal); background: rgba(107, 181, 181, 0.08);
+    padding: 3px 10px; border-radius: 3px; border: 1px solid var(--teal-dim);
+  }
+  .card-body { padding: 16px; }
+  .card-title {
+    font-size: 14px; font-weight: 500; color: var(--cream);
+    margin-bottom: 4px; line-height: 1.3;
+  }
+  .card-meta {
+    display: flex; gap: 12px; margin-top: 10px;
+    padding-top: 10px; border-top: 1px solid var(--border);
+  }
+  .card-meta-item {
+    font-size: 10px; color: var(--cream-dim);
+    display: flex; align-items: center; gap: 4px;
+  }
+  .dot {
+    width: 3px; height: 3px; border-radius: 50%;
+    background: var(--pink); opacity: 0.5;
+  }
+</style>
