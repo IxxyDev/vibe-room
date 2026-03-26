@@ -1,0 +1,154 @@
+---
+interface Image {
+  url: string
+  alt: string
+  sizes?: {
+    full?: { url: string }
+    card?: { url: string }
+    thumbnail?: { url: string }
+  }
+}
+
+interface Props {
+  images: Image[]
+}
+
+const { images } = Astro.props
+---
+
+<div class="gallery" id="gallery">
+  <div class="gallery-main" id="gallery-main">
+    <img
+      src={images[0]?.sizes?.full?.url || images[0]?.url}
+      alt={images[0]?.alt}
+      class="gallery-main-img"
+      id="gallery-main-img"
+    />
+  </div>
+  {images.length > 1 && (
+    <div class="gallery-thumbs">
+      {images.map((img, i) => (
+        <button
+          class:list={['gallery-thumb', { active: i === 0 }]}
+          data-full={img.sizes?.full?.url || img.url}
+          data-alt={img.alt}
+        >
+          <img src={img.sizes?.thumbnail?.url || img.url} alt={img.alt} loading="lazy" />
+        </button>
+      ))}
+    </div>
+  )}
+</div>
+
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lightbox-close" aria-label="Закрыть">&times;</button>
+  <button class="lightbox-prev" aria-label="Предыдущее">&#8249;</button>
+  <img src="" alt="" class="lightbox-img" id="lightbox-img" />
+  <button class="lightbox-next" aria-label="Следующее">&#8250;</button>
+</div>
+
+<style>
+  .gallery-main {
+    border-radius: 10px; overflow: hidden;
+    background: var(--bg-card); border: 1px solid var(--border); cursor: zoom-in;
+  }
+  .gallery-main-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+  .gallery-thumbs {
+    display: flex; gap: 8px; margin-top: 8px;
+    overflow-x: auto; padding-bottom: 4px;
+  }
+  .gallery-thumb {
+    flex-shrink: 0; width: 72px; height: 54px; border-radius: 6px;
+    overflow: hidden; border: 2px solid transparent;
+    cursor: pointer; background: none; padding: 0; transition: border-color 0.2s;
+  }
+  .gallery-thumb.active { border-color: var(--pink); }
+  .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+  .lightbox {
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95);
+    z-index: 1000; display: flex; align-items: center;
+    justify-content: center; padding: 40px;
+  }
+  .lightbox[hidden] { display: none; }
+  .lightbox-close {
+    position: absolute; top: 20px; right: 20px;
+    background: none; border: none; color: var(--cream);
+    font-size: 32px; cursor: pointer;
+  }
+  .lightbox-prev, .lightbox-next {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--cream);
+    font-size: 48px; cursor: pointer; padding: 20px;
+    opacity: 0.6; transition: opacity 0.2s;
+  }
+  .lightbox-prev:hover, .lightbox-next:hover { opacity: 1; }
+  .lightbox-prev { left: 10px; }
+  .lightbox-next { right: 10px; }
+  .lightbox-img { max-width: 90%; max-height: 90%; object-fit: contain; }
+</style>
+
+<script>
+  function initGallery() {
+    const mainImg = document.getElementById('gallery-main-img') as HTMLImageElement
+    const thumbs = Array.from(document.querySelectorAll<HTMLButtonElement>('.gallery-thumb'))
+    const lightbox = document.getElementById('lightbox')!
+    const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement
+    const galleryMain = document.getElementById('gallery-main')
+
+    let currentIndex = 0
+    const allImages = thumbs.map((t) => ({ src: t.dataset.full!, alt: t.dataset.alt! }))
+    if (allImages.length === 0 && mainImg.src) {
+      allImages.push({ src: mainImg.src, alt: mainImg.alt })
+    }
+
+    function showThumb(index: number) {
+      currentIndex = index
+      thumbs.forEach((t, i) => t.classList.toggle('active', i === index))
+      mainImg.src = allImages[index].src
+      mainImg.alt = allImages[index].alt
+    }
+
+    function showLightbox(index: number) {
+      currentIndex = index
+      lightboxImg.src = allImages[index].src
+      lightboxImg.alt = allImages[index].alt
+      lightbox.hidden = false
+    }
+
+    function navigate(delta: number) {
+      const next = (currentIndex + delta + allImages.length) % allImages.length
+      currentIndex = next
+      lightboxImg.src = allImages[next].src
+      lightboxImg.alt = allImages[next].alt
+      showThumb(next)
+    }
+
+    thumbs.forEach((thumb, i) => {
+      thumb.addEventListener('click', () => showThumb(i))
+    })
+
+    galleryMain?.addEventListener('click', () => showLightbox(currentIndex))
+
+    lightbox.querySelector('.lightbox-close')?.addEventListener('click', () => { lightbox.hidden = true })
+    lightbox.querySelector('.lightbox-prev')?.addEventListener('click', () => navigate(-1))
+    lightbox.querySelector('.lightbox-next')?.addEventListener('click', () => navigate(1))
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) lightbox.hidden = true })
+
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.hidden) return
+      if (e.key === 'Escape') lightbox.hidden = true
+      if (e.key === 'ArrowLeft') navigate(-1)
+      if (e.key === 'ArrowRight') navigate(1)
+    })
+
+    let touchStartX = 0
+    lightbox.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX }, { passive: true })
+    lightbox.addEventListener('touchend', (e) => {
+      const diff = e.changedTouches[0].clientX - touchStartX
+      if (Math.abs(diff) > 50) navigate(diff > 0 ? -1 : 1)
+    })
+  }
+
+  initGallery()
+</script>
