@@ -1,7 +1,12 @@
 import type { CollectionConfig } from 'payload'
+import { triggerRebuild } from '../hooks/rebuild'
 
 export const Instruments: CollectionConfig = {
   slug: 'instruments',
+  hooks: {
+    afterChange: [({ req }) => { triggerRebuild(req.payload) }],
+    afterDelete: [({ req }) => { triggerRebuild(req.payload) }],
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'category', 'year'],

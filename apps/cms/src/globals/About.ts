@@ -1,7 +1,11 @@
 import type { GlobalConfig } from 'payload'
+import { triggerRebuild } from '../hooks/rebuild'
 
 export const About: GlobalConfig = {
   slug: 'about',
+  hooks: {
+    afterChange: [({ req }) => { triggerRebuild(req.payload) }],
+  },
   label: 'О коллекции',
   fields: [
     {

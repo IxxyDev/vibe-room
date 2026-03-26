@@ -1,7 +1,12 @@
 import type { CollectionConfig } from 'payload'
+import { triggerRebuild } from '../hooks/rebuild'
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
+  hooks: {
+    afterChange: [({ req }) => { triggerRebuild(req.payload) }],
+    afterDelete: [({ req }) => { triggerRebuild(req.payload) }],
+  },
   admin: {
     useAsTitle: 'name',
   },
