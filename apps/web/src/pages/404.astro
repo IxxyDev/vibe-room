@@ -1,0 +1,30 @@
+---
+import Base from '@/layouts/Base.astro'
+---
+
+<Base title="Страница не найдена" description="Запрашиваемая страница не существует">
+  <div class="not-found">
+    <span class="not-found-code">404</span>
+    <p class="not-found-text">Такой страницы нет</p>
+    <a href="/" class="not-found-link">Вернуться в каталог</a>
+  </div>
+</Base>
+
+<style>
+  .not-found {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 60vh; text-align: center; padding: 40px;
+  }
+  .not-found-code {
+    font-size: 120px; font-weight: 600; color: var(--pink);
+    text-shadow: 0 0 40px rgba(255, 61, 154, 0.3); line-height: 1;
+  }
+  .not-found-text {
+    font-size: 16px; color: var(--cream-dim); margin: 16px 0 32px;
+  }
+  .not-found-link {
+    font-size: 13px; color: var(--pink); border: 1px solid var(--pink);
+    padding: 10px 24px; border-radius: 6px; transition: all 0.2s;
+  }
+  .not-found-link:hover { background: rgba(255, 61, 154, 0.1); }
+</style>
