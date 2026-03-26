@@ -7,6 +7,10 @@ const dirname = path.dirname(filename)
 
 export const Media: CollectionConfig = {
   slug: 'media',
+  labels: {
+    singular: 'Медиа',
+    plural: 'Медиа',
+  },
   upload: {
     staticDir: path.resolve(dirname, '../../media'),
     mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],

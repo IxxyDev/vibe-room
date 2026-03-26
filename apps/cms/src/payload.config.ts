@@ -25,5 +25,11 @@ export default buildConfig({
   },
   admin: {
     user: 'users',
+    meta: {
+      titleSuffix: '— Vibe Room',
+    },
+  },
+  i18n: {
+    fallbackLanguage: 'ru',
   },
 })

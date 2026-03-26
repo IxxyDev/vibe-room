@@ -3,6 +3,10 @@ import { triggerRebuild } from '../hooks/rebuild'
 
 export const Instruments: CollectionConfig = {
   slug: 'instruments',
+  labels: {
+    singular: 'Инструмент',
+    plural: 'Инструменты',
+  },
   hooks: {
     afterChange: [({ req }) => { triggerRebuild(req.payload) }],
     afterDelete: [({ req }) => { triggerRebuild(req.payload) }],
@@ -16,12 +20,14 @@ export const Instruments: CollectionConfig = {
       name: 'title',
       type: 'text',
       required: true,
+      label: 'Название',
     },
     {
       name: 'slug',
       type: 'text',
       required: true,
       unique: true,
+      label: 'Slug',
       admin: {
         position: 'sidebar',
       },
@@ -31,6 +37,7 @@ export const Instruments: CollectionConfig = {
       type: 'select',
       required: true,
       defaultValue: 'available',
+      label: 'Статус',
       options: [
         { label: 'В наличии', value: 'available' },
         { label: 'Архив', value: 'archive' },
@@ -44,10 +51,12 @@ export const Instruments: CollectionConfig = {
       type: 'relationship',
       relationTo: 'categories',
       required: true,
+      label: 'Категория',
     },
     {
       name: 'description',
       type: 'richText',
+      label: 'Описание',
     },
     {
       name: 'specs',
@@ -74,6 +83,7 @@ export const Instruments: CollectionConfig = {
       relationTo: 'media',
       hasMany: true,
       required: true,
+      label: 'Фотографии',
     },
     {
       name: 'year',
@@ -99,6 +109,7 @@ export const Instruments: CollectionConfig = {
       name: 'order',
       type: 'number',
       defaultValue: 0,
+      label: 'Порядок',
       admin: {
         position: 'sidebar',
       },
