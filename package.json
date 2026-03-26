@@ -1,0 +1,12 @@
+{
+  "name": "vibe-room",
+  "private": true,
+  "scripts": {
+    "dev:cms": "pnpm --filter @vibe-room/cms dev",
+    "dev:web": "pnpm --filter @vibe-room/web dev",
+    "build:web": "pnpm --filter @vibe-room/web build"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

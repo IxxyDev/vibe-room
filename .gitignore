@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.astro/
+.next/
+.env
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+apps/cms/data/
+apps/cms/media/
+.superpowers/
