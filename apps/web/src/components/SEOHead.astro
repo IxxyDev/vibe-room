@@ -1,0 +1,29 @@
+---
+interface Props {
+  title: string
+  description: string
+  ogImage?: string
+  canonicalUrl?: string
+  jsonLd?: Record<string, unknown>
+}
+
+const { title, description, ogImage, canonicalUrl, jsonLd } = Astro.props
+const siteName = 'Vibe Room'
+const fullTitle = title === siteName ? title : `${title} — ${siteName}`
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content="website" />
+{ogImage && <meta property="og:image" content={ogImage} />}
+{canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+<meta name="theme-color" content="#0a0a0f" />
+<link rel="icon" type="image/svg+xml" href="/logo.svg" />
+
+{jsonLd && (
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+)}

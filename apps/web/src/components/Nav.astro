@@ -1,0 +1,101 @@
+---
+import { getPayloadClient } from '@/lib/payload'
+
+const payload = await getPayloadClient()
+const settings = await payload.findGlobal({ slug: 'site-settings' })
+
+interface Props {
+  activePage?: 'catalog' | 'about'
+}
+
+const { activePage = 'catalog' } = Astro.props
+---
+
+<nav class="nav">
+  <a href="/" class="nav-logo">
+    <span class="vibe">Vibe</span>
+    <span class="room">Room</span>
+  </a>
+  <div class="nav-links" id="nav-links">
+    <a href="/" class:list={['nav-link', { active: activePage === 'catalog' }]}>Каталог</a>
+    <a href="/about" class:list={['nav-link', { active: activePage === 'about' }]}>О коллекции</a>
+    <div class="nav-socials">
+      {settings.telegramUrl && <a href={settings.telegramUrl} class="nav-social" target="_blank" rel="noopener">TG</a>}
+      {settings.instagramUrl && <a href={settings.instagramUrl} class="nav-social" target="_blank" rel="noopener">INST</a>}
+      {settings.vkUrl && <a href={settings.vkUrl} class="nav-social" target="_blank" rel="noopener">VK</a>}
+    </div>
+  </div>
+  <button class="nav-burger" id="nav-burger" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<style>
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .nav-logo { display: flex; align-items: baseline; gap: 2px; }
+  .vibe {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-size: 26px;
+    color: var(--pink);
+    text-shadow: 0 0 30px rgba(255, 61, 154, 0.4);
+  }
+  .room {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--cream);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-link {
+    font-size: 13px; color: var(--cream-dim);
+    letter-spacing: 1px; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-link:hover, .nav-link.active { color: var(--pink); }
+  .nav-socials {
+    display: flex; gap: 16px; margin-left: 20px;
+    padding-left: 20px; border-left: 1px solid var(--border);
+  }
+  .nav-social {
+    font-size: 11px; color: var(--cream-dim); transition: color 0.2s;
+  }
+  .nav-social:hover { color: var(--pink); }
+  .nav-burger {
+    display: none; flex-direction: column; gap: 5px;
+    background: none; border: none; cursor: pointer; padding: 4px;
+  }
+  .nav-burger span {
+    width: 24px; height: 2px; background: var(--cream); transition: 0.2s;
+  }
+
+  @media (max-width: 768px) {
+    .nav { padding: 16px 20px; }
+    .nav-links {
+      display: none; flex-direction: column;
+      position: absolute; top: 100%; left: 0; right: 0;
+      background: var(--bg); padding: 20px;
+      border-bottom: 1px solid var(--border); z-index: 100;
+    }
+    .nav-links.open { display: flex; }
+    .nav-burger { display: flex; }
+    .nav-socials {
+      margin-left: 0; padding-left: 0; border-left: none;
+      padding-top: 12px; border-top: 1px solid var(--border);
+    }
+  }
+</style>
+
+<script>
+  document.getElementById('nav-burger')?.addEventListener('click', () => {
+    document.getElementById('nav-links')?.classList.toggle('open')
+  })
+</script>

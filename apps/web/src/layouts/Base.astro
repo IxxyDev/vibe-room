@@ -1,0 +1,37 @@
+---
+import Nav from '@/components/Nav.astro'
+import Footer from '@/components/Footer.astro'
+import SEOHead from '@/components/SEOHead.astro'
+import '@/styles/global.css'
+
+interface Props {
+  title: string
+  description: string
+  ogImage?: string
+  canonicalUrl?: string
+  jsonLd?: Record<string, unknown>
+  activePage?: 'catalog' | 'about'
+}
+
+const { title, description, ogImage, canonicalUrl, jsonLd, activePage = 'catalog' } = Astro.props
+---
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <SEOHead
+    title={title}
+    description={description}
+    ogImage={ogImage}
+    canonicalUrl={canonicalUrl}
+    jsonLd={jsonLd}
+  />
+</head>
+<body>
+  <Nav activePage={activePage} />
+  <main>
+    <slot />
+  </main>
+  <Footer />
+</body>
+</html>

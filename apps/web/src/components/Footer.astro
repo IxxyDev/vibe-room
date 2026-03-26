@@ -1,0 +1,30 @@
+---
+import { getPayloadClient } from '@/lib/payload'
+
+const payload = await getPayloadClient()
+const settings = await payload.findGlobal({ slug: 'site-settings' })
+---
+
+<footer class="footer">
+  <span class="footer-text">GUITARS · MUSIC · WORKSHOP</span>
+  <div class="footer-links">
+    {settings.telegramUrl && <a href={settings.telegramUrl} class="footer-link" target="_blank" rel="noopener">Telegram</a>}
+    {settings.instagramUrl && <a href={settings.instagramUrl} class="footer-link" target="_blank" rel="noopener">Instagram</a>}
+    {settings.vkUrl && <a href={settings.vkUrl} class="footer-link" target="_blank" rel="noopener">VK</a>}
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding: 24px 40px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-text { font-size: 11px; color: var(--cream-dim); letter-spacing: 1px; }
+  .footer-links { display: flex; gap: 20px; }
+  .footer-link { font-size: 11px; color: var(--cream-dim); transition: color 0.2s; }
+  .footer-link:hover { color: var(--pink); }
+
+  @media (max-width: 480px) {
+    .footer { flex-direction: column; gap: 12px; padding: 20px; }
+  }
+</style>
