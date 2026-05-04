@@ -10,8 +10,12 @@ import { Instruments } from './collections/Instruments'
 import { About } from './globals/About'
 import { SiteSettings } from './globals/SiteSettings'
 
+if (!process.env.PAYLOAD_SECRET) {
+  throw new Error('PAYLOAD_SECRET environment variable is required')
+}
+
 export default buildConfig({
-  secret: process.env.PAYLOAD_SECRET || 'dev-secret-at-least-32-characters-long-here',
+  secret: process.env.PAYLOAD_SECRET,
   db: sqliteAdapter({
     client: {
       url: process.env.DATABASE_URL || `file:${path.resolve(process.cwd(), 'data/vibe-room.db')}`,

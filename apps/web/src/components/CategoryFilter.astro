@@ -78,21 +78,28 @@ const { categories } = Astro.props
     let activeTab = 'available'
     let activeCategory = 'all'
 
+    const emptyState = document.getElementById('empty-state')
+
     function updateView() {
       const categoryCounts: Record<string, number> = {}
+      let visible = 0
 
       cards.forEach((card) => {
         const status = card.dataset.status
         const category = card.dataset.category
         const matchesTab = status === activeTab
         const matchesCategory = activeCategory === 'all' || category === activeCategory
+        const show = matchesTab && matchesCategory
 
-        card.style.display = matchesTab && matchesCategory ? '' : 'none'
+        card.classList.toggle('is-hidden', !show)
+        if (show) visible++
 
         if (status === activeTab) {
           categoryCounts[category!] = (categoryCounts[category!] || 0) + 1
         }
       })
+
+      if (emptyState) emptyState.hidden = visible > 0
 
       const totalForTab = cards.filter((c) => c.dataset.status === activeTab).length
       pills.forEach((pill) => {

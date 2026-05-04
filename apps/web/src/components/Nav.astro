@@ -1,8 +1,13 @@
 ---
 import { getPayloadClient } from '@/lib/payload'
 
-const payload = await getPayloadClient()
-const settings = await payload.findGlobal({ slug: 'site-settings' })
+let settings: { telegramUrl?: string; instagramUrl?: string; vkUrl?: string } = {}
+try {
+  const payload = await getPayloadClient()
+  settings = await payload.findGlobal({ slug: 'site-settings' })
+} catch (error) {
+  console.error('[Nav] Failed to fetch site settings:', error)
+}
 
 interface Props {
   activePage?: 'catalog' | 'about'
@@ -16,6 +21,9 @@ const { activePage = 'catalog' } = Astro.props
     <span class="vibe">Vibe</span>
     <span class="room">Room</span>
   </a>
+  <button class="nav-burger" id="nav-burger" aria-controls="nav-links" aria-expanded="false" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
   <div class="nav-links" id="nav-links">
     <a href="/" class:list={['nav-link', { active: activePage === 'catalog' }]}>Каталог</a>
     <a href="/about" class:list={['nav-link', { active: activePage === 'about' }]}>О коллекции</a>
@@ -25,9 +33,6 @@ const { activePage = 'catalog' } = Astro.props
       {settings.vkUrl && <a href={settings.vkUrl} class="nav-social" target="_blank" rel="noopener">VK</a>}
     </div>
   </div>
-  <button class="nav-burger" id="nav-burger" aria-label="Меню">
-    <span></span><span></span><span></span>
-  </button>
 </nav>
 
 <style>
@@ -74,19 +79,66 @@ const { activePage = 'catalog' } = Astro.props
     background: none; border: none; cursor: pointer; padding: 4px;
   }
   .nav-burger span {
-    width: 24px; height: 2px; background: var(--cream); transition: 0.2s;
+    width: 24px; height: 2px; background: var(--cream);
+    transition: transform 240ms ease, opacity 200ms ease;
+    transform-origin: center;
+  }
+  .nav-burger[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .nav-burger[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0.2);
+  }
+  .nav-burger[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
   }
 
   @media (max-width: 768px) {
     .nav { padding: 16px 20px; }
-    .nav-links {
-      display: none; flex-direction: column;
-      position: absolute; top: 100%; left: 0; right: 0;
-      background: var(--bg); padding: 20px;
-      border-bottom: 1px solid var(--border); z-index: 100;
-    }
-    .nav-links.open { display: flex; }
     .nav-burger { display: flex; }
+
+    .nav-links {
+      display: none;
+      opacity: 0;
+      flex-direction: column;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg);
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+
+      transition: opacity 250ms, display 250ms allow-discrete;
+    }
+
+    .nav-links > * {
+      opacity: 1;
+      translate: 0 0;
+      transition: opacity 300ms, translate 500ms;
+      transition-delay: var(--delay, 80ms);
+    }
+    .nav-links > *:nth-child(2) { --delay: 160ms; }
+    .nav-links > *:nth-child(3) { --delay: 240ms; }
+
+    .nav-burger[aria-expanded="true"] ~ .nav-links {
+      display: flex;
+      opacity: 1;
+
+      @starting-style {
+        opacity: 0;
+      }
+
+      > * {
+        @starting-style {
+          opacity: 0;
+          translate: 0 -8px;
+        }
+      }
+    }
+
     .nav-socials {
       margin-left: 0; padding-left: 0; border-left: none;
       padding-top: 12px; border-top: 1px solid var(--border);
@@ -95,7 +147,20 @@ const { activePage = 'catalog' } = Astro.props
 </style>
 
 <script>
-  document.getElementById('nav-burger')?.addEventListener('click', () => {
-    document.getElementById('nav-links')?.classList.toggle('open')
+  const burger = document.getElementById('nav-burger')
+  const links = document.getElementById('nav-links')
+
+  function setOpen(open: boolean) {
+    burger?.setAttribute('aria-expanded', String(open))
+    document.body.style.overflow = open ? 'hidden' : ''
+  }
+
+  burger?.addEventListener('click', () => {
+    const open = burger.getAttribute('aria-expanded') === 'true'
+    setOpen(!open)
+  })
+
+  links?.querySelectorAll('a').forEach((a) => {
+    a.addEventListener('click', () => setOpen(false))
   })
 </script>

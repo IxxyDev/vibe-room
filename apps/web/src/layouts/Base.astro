@@ -33,5 +33,25 @@ const { title, description, ogImage, canonicalUrl, jsonLd, activePage = 'catalog
     <slot />
   </main>
   <Footer />
+  <script>
+    const ro = new ResizeObserver(() => {
+      document.body.classList.add('resizing')
+      requestAnimationFrame(() => document.body.classList.remove('resizing'))
+    })
+    ro.observe(document.body)
+
+    function markLoaded(img: HTMLImageElement) {
+      img.dataset.loaded = 'true'
+    }
+
+    document.querySelectorAll<HTMLImageElement>('img').forEach((img) => {
+      if (img.complete && img.naturalWidth > 0) {
+        markLoaded(img)
+      } else {
+        img.addEventListener('load', () => markLoaded(img), { once: true })
+        img.addEventListener('error', () => markLoaded(img), { once: true })
+      }
+    })
+  </script>
 </body>
 </html>

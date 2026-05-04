@@ -4,25 +4,22 @@ import InstrumentCard from '@/components/InstrumentCard.astro'
 import CategoryFilter from '@/components/CategoryFilter.astro'
 import { getPayloadClient } from '@/lib/payload'
 
-const payload = await getPayloadClient()
+let instruments: Awaited<ReturnType<Awaited<ReturnType<typeof getPayloadClient>>['find']>>['docs'] = []
+let categoryList: { slug: string; name: string }[] = []
 
-const { docs: instruments } = await payload.find({
-  collection: 'instruments',
-  sort: 'order',
-  limit: 500,
-  depth: 1,
-})
+try {
+  const payload = await getPayloadClient()
 
-const { docs: categories } = await payload.find({
-  collection: 'categories',
-  sort: 'order',
-  limit: 100,
-})
+  const [instrumentsResult, categoriesResult] = await Promise.all([
+    payload.find({ collection: 'instruments', sort: 'order', limit: 500, depth: 1 }),
+    payload.find({ collection: 'categories', sort: 'order', limit: 100 }),
+  ])
 
-const categoryList = categories.map((cat) => ({
-  slug: cat.slug,
-  name: cat.name,
-}))
+  instruments = instrumentsResult.docs
+  categoryList = categoriesResult.docs.map((cat) => ({ slug: cat.slug, name: cat.name }))
+} catch (error) {
+  console.error('[index] Failed to fetch data from CMS:', error)
+}
 ---
 
 <Base
@@ -30,6 +27,7 @@ const categoryList = categories.map((cat) => ({
   description="Коллекция музыкального оборудования и инструментов — гитары, усилители, педали эффектов"
 >
   <CategoryFilter categories={categoryList} />
+  <p class="empty-state" id="empty-state" hidden>В этой категории пока ничего нет</p>
   <div class="grid" id="instruments-grid">
     {instruments.map((inst) => {
       const category = typeof inst.category === 'object' ? inst.category : null
@@ -59,6 +57,28 @@ const categoryList = categories.map((cat) => ({
   .grid {
     display: grid; grid-template-columns: repeat(3, 1fr);
     gap: 16px; padding: 20px 40px 40px;
+  }
+  .grid > :global(.card) {
+    transition: opacity 220ms ease, transform 220ms ease;
+  }
+  .grid > :global(.card.is-hidden) {
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    position: absolute;
+    visibility: hidden;
+  }
+  .empty-state {
+    text-align: center;
+    color: var(--cream-dim);
+    font-size: 14px;
+    padding: 60px 20px;
+    letter-spacing: 0.5px;
+    animation: fade-in 250ms ease;
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: none; }
   }
   @media (max-width: 768px) {
     .grid { grid-template-columns: repeat(2, 1fr); padding: 16px 20px 32px; gap: 12px; }

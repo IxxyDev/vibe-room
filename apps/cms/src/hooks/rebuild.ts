@@ -1,4 +1,4 @@
-import { exec } from 'child_process'
+import { spawn } from 'child_process'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import type { Payload } from 'payload'
@@ -21,10 +21,15 @@ async function runBuild(payload?: Payload): Promise<void> {
   console.log('[rebuild] Starting astro build...')
 
   return new Promise((resolve) => {
-    exec('pnpm build', { cwd: webDir }, async (error, stdout, stderr) => {
+    const child = spawn('pnpm', ['build'], { cwd: webDir, stdio: 'pipe' })
+
+    let stderr = ''
+    child.stderr.on('data', (data) => { stderr += data.toString() })
+
+    child.on('close', async (code) => {
       building = false
 
-      if (error) {
+      if (code !== 0) {
         console.error('[rebuild] Build failed:', stderr)
       } else {
         console.log('[rebuild] Build complete.')
@@ -46,6 +51,12 @@ async function runBuild(payload?: Payload): Promise<void> {
       } else {
         resolve()
       }
+    })
+
+    child.on('error', (error) => {
+      building = false
+      console.error('[rebuild] Failed to start build process:', error)
+      resolve()
     })
   })
 }

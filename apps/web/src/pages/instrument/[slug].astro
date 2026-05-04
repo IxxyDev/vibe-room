@@ -5,22 +5,33 @@ import { getPayloadClient } from '@/lib/payload'
 import { richTextToHtml, richTextToPlainText } from '@/lib/richtext'
 
 export async function getStaticPaths() {
-  const payload = await getPayloadClient()
-  const { docs } = await payload.find({
-    collection: 'instruments',
-    limit: 500,
-    depth: 1,
-  })
+  try {
+    const payload = await getPayloadClient()
+    const { docs } = await payload.find({
+      collection: 'instruments',
+      limit: 500,
+      depth: 1,
+    })
 
-  return docs.map((inst) => ({
-    params: { slug: inst.slug },
-    props: { instrument: inst },
-  }))
+    return docs.map((inst) => ({
+      params: { slug: inst.slug },
+      props: { instrument: inst },
+    }))
+  } catch (error) {
+    console.error('[instrument] Failed to fetch instruments for static paths:', error)
+    return []
+  }
 }
 
 const { instrument } = Astro.props
-const payload = await getPayloadClient()
-const settings = await payload.findGlobal({ slug: 'site-settings' })
+
+let settings: { siteUrl?: string } = {}
+try {
+  const payload = await getPayloadClient()
+  settings = await payload.findGlobal({ slug: 'site-settings' })
+} catch (error) {
+  console.error('[instrument] Failed to fetch site settings:', error)
+}
 
 const category = typeof instrument.category === 'object' ? instrument.category : null
 const images = (Array.isArray(instrument.images) ? instrument.images : [])

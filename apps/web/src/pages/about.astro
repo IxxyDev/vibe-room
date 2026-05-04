@@ -3,8 +3,13 @@ import Base from '@/layouts/Base.astro'
 import { getPayloadClient } from '@/lib/payload'
 import { richTextToHtml } from '@/lib/richtext'
 
-const payload = await getPayloadClient()
-const about = await payload.findGlobal({ slug: 'about' })
+let about: { heading?: string; content?: any; photo?: any; stats?: any[] } = {}
+try {
+  const payload = await getPayloadClient()
+  about = await payload.findGlobal({ slug: 'about' })
+} catch (error) {
+  console.error('[about] Failed to fetch about data:', error)
+}
 
 const photo = typeof about.photo === 'object' ? about.photo : null
 const contentHtml = richTextToHtml(about.content)

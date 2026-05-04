@@ -1,8 +1,13 @@
 ---
 import { getPayloadClient } from '@/lib/payload'
 
-const payload = await getPayloadClient()
-const settings = await payload.findGlobal({ slug: 'site-settings' })
+let settings: { telegramUrl?: string; instagramUrl?: string; vkUrl?: string } = {}
+try {
+  const payload = await getPayloadClient()
+  settings = await payload.findGlobal({ slug: 'site-settings' })
+} catch (error) {
+  console.error('[Footer] Failed to fetch site settings:', error)
+}
 ---
 
 <footer class="footer">

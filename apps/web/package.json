@@ -9,13 +9,13 @@
   },
   "dependencies": {
     "astro": "^5.0.0",
-    "@astrojs/sitemap": "^3.0.0",
+    "@astrojs/sitemap": "^3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
     "payload": "^3.0.0",
     "@payloadcms/db-sqlite": "^3.0.0",
     "@payloadcms/richtext-lexical": "^3.0.0",
     "@vibe-room/cms": "workspace:*"
-  },
-  "devDependencies": {
-    "typescript": "^5.7.0"
   }
 }

@@ -18,7 +18,14 @@ const { title, slug, categoryName, categorySlug, imageUrl, imageAlt, year, count
 <a href={`/instrument/${slug}`} class="card" data-status={status} data-category={categorySlug}>
   <div class="card-img">
     {imageUrl
-      ? <img src={imageUrl} alt={imageAlt || title} loading="lazy" />
+      ? <img
+          src={imageUrl}
+          alt={imageAlt || title}
+          loading="lazy"
+          decoding="async"
+          width="400"
+          height="300"
+        />
       : <div class="card-img-placeholder">&#9835;</div>
     }
     <span class="card-category-badge">{categoryName}</span>
@@ -36,12 +43,16 @@ const { title, slug, categoryName, categorySlug, imageUrl, imageAlt, year, count
 <style>
   .card {
     background: var(--bg-card); border-radius: 10px; overflow: hidden;
-    border: 1px solid var(--border); transition: all 0.3s ease; display: block;
+    border: 1px solid var(--border); display: block;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    will-change: transform;
   }
-  .card:hover {
-    border-color: rgba(255, 61, 154, 0.15);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  @media (hover: hover) {
+    .card:hover {
+      border-color: rgba(255, 61, 154, 0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
   }
   .card-img {
     aspect-ratio: 4/3; background: linear-gradient(135deg, #15151d, #1a1a24);
