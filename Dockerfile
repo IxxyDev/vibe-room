@@ -20,8 +20,6 @@ ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
 ENV NODE_ENV=production
 RUN pnpm --filter @vibe-room/cms exec payload generate:importmap || true
 RUN pnpm --filter @vibe-room/cms build
-RUN pnpm --filter @vibe-room/web build
-RUN cp -a /app/apps/web/dist /app/apps/web/.dist-seed
 
 FROM base AS runner
 ENV NODE_ENV=production

@@ -2,12 +2,14 @@
 set -eu
 
 DIST_DIR=/app/apps/web/dist
-SEED_DIR=/app/apps/web/.dist-seed
 
-if [ -d "$SEED_DIR" ] && [ -z "$(ls -A "$DIST_DIR" 2>/dev/null || true)" ]; then
-  echo "[entrypoint] Seeding empty dist volume from image..."
-  mkdir -p "$DIST_DIR"
-  cp -a "$SEED_DIR/." "$DIST_DIR/"
+# Initial Astro build: only on first run when dist volume is empty.
+# triggerRebuild handles subsequent rebuilds when CMS content changes.
+if [ -z "$(ls -A "$DIST_DIR" 2>/dev/null || true)" ]; then
+  echo "[entrypoint] Empty dist volume — running initial Astro build..."
+  cd /app && pnpm --filter @vibe-room/web build
+  echo "[entrypoint] Initial build complete."
 fi
 
+cd /app
 exec pnpm --filter @vibe-room/cms start
