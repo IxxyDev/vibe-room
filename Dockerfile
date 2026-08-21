@@ -23,7 +23,10 @@ RUN pnpm --filter @vibe-room/cms build
 
 FROM base AS runner
 ENV NODE_ENV=production
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl tini && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl tini sqlite3 gosu \
+  && rm -rf /var/lib/apt/lists/* \
+  && groupadd --system --gid 1001 appuser \
+  && useradd --system --uid 1001 --gid appuser --home /app --shell /usr/sbin/nologin appuser
 COPY --from=builder /app /app
 COPY scripts/cms-entrypoint.sh /usr/local/bin/cms-entrypoint.sh
 RUN chmod +x /usr/local/bin/cms-entrypoint.sh
