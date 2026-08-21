@@ -7,6 +7,12 @@ export const Categories: CollectionConfig = {
     singular: 'Категория',
     plural: 'Категории',
   },
+  access: {
+    read: () => true,
+    create: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    delete: ({ req }) => Boolean(req.user),
+  },
   hooks: {
     afterChange: [({ req }) => { triggerRebuild(req.payload) }],
     afterDelete: [({ req }) => { triggerRebuild(req.payload) }],

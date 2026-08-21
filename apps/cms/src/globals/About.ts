@@ -3,6 +3,10 @@ import { triggerRebuild } from '../hooks/rebuild'
 
 export const About: GlobalConfig = {
   slug: 'about',
+  access: {
+    read: () => true,
+    update: ({ req }) => Boolean(req.user),
+  },
   hooks: {
     afterChange: [({ req }) => { triggerRebuild(req.payload) }],
   },

@@ -7,6 +7,12 @@ export const Instruments: CollectionConfig = {
     singular: 'Инструмент',
     plural: 'Инструменты',
   },
+  access: {
+    read: () => true,
+    create: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    delete: ({ req }) => Boolean(req.user),
+  },
   hooks: {
     afterChange: [({ req }) => { triggerRebuild(req.payload) }],
     afterDelete: [({ req }) => { triggerRebuild(req.payload) }],

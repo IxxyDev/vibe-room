@@ -11,6 +11,12 @@ export const Media: CollectionConfig = {
     singular: 'Медиа',
     plural: 'Медиа',
   },
+  access: {
+    read: () => true,
+    create: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    delete: ({ req }) => Boolean(req.user),
+  },
   upload: {
     staticDir: path.resolve(dirname, '../../media'),
     mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],

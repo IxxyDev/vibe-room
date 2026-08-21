@@ -3,11 +3,15 @@ import { triggerRebuild } from '../hooks/rebuild'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
+  access: {
+    read: () => true,
+    update: ({ req }) => Boolean(req.user),
+  },
   hooks: {
     afterChange: [
       ({ data, previousDoc, req }) => {
         const changed = Object.keys(data).some(
-          (key) => key !== 'lastBuildAt' && data[key] !== previousDoc?.[key],
+          (key) => key !== 'lastBuildAt' && JSON.stringify(data[key]) !== JSON.stringify(previousDoc?.[key]),
         )
         if (changed) triggerRebuild(req.payload)
       },
