@@ -47,6 +47,7 @@ services:
 
   certbot:
     image: certbot/certbot:latest
+    restart: unless-stopped
     volumes:
       - ./nginx/certs:/etc/letsencrypt
       - ./nginx/certbot-www:/var/www/certbot
