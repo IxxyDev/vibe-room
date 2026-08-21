@@ -1,12 +1,22 @@
 {
   "name": "vibe-room",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev:cms": "pnpm --filter @vibe-room/cms dev",
     "dev:web": "pnpm --filter @vibe-room/web dev",
-    "build:web": "pnpm --filter @vibe-room/web build"
+    "build:web": "pnpm --filter @vibe-room/web build",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.9.0",
+    "globals": "^17.11.0",
+    "typescript-eslint": "^8.67.0"
   }
 }

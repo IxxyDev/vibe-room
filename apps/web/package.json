@@ -5,17 +5,19 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "typecheck": "astro check"
   },
   "dependencies": {
-    "astro": "^5.0.0",
-    "@astrojs/sitemap": "^3.0.0"
+    "@astrojs/sitemap": "^3.0.0",
+    "astro": "^5.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.7.0",
-    "payload": "^3.0.0",
+    "@astrojs/check": "^0.9.10",
     "@payloadcms/db-sqlite": "^3.0.0",
     "@payloadcms/richtext-lexical": "^3.0.0",
-    "@vibe-room/cms": "workspace:*"
+    "@vibe-room/cms": "workspace:*",
+    "payload": "^3.0.0",
+    "typescript": "^5.7.0"
   }
 }

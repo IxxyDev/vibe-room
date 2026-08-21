@@ -10,3 +10,4 @@ dist/
 apps/cms/data/
 apps/cms/media/
 .superpowers/
+*.tsbuildinfo
