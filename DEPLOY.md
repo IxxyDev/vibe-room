@@ -120,7 +120,7 @@ docker compose exec cms sqlite3 /app/apps/cms/data/vibe-room.db .tables   # ин
 
 ## 10. Авто-деплой через GitHub Actions
 
-Workflow `.github/workflows/deploy.yml` делает `git pull && docker compose build cms && up -d` при push в `main`.
+Workflow `.github/workflows/deploy.yml` сначала прогоняет джобу `verify` (`pnpm install`, typecheck, `cms` build) и только при её успехе — джобу `deploy` (`git pull && docker compose build cms && up -d`) при push в `main`. Битый коммит не может уехать в прод, не пройдя сборку.
 
 **Один раз на сервере** создай deploy-юзера и SSH-ключ:
 
