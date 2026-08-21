@@ -12,15 +12,15 @@ const { categories } = Astro.props
 ---
 
 <div class="catalog-controls" id="catalog-controls">
-  <div class="tabs-bar">
-    <button class="tab active" data-tab="available">В наличии</button>
-    <button class="tab" data-tab="archive">Архив</button>
+  <div class="tabs-bar" role="tablist" aria-label="Статус">
+    <button class="tab active" role="tab" aria-selected="true" aria-controls="instruments-grid" data-tab="available">В наличии</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="instruments-grid" data-tab="archive">Архив</button>
   </div>
-  <div class="filters">
-    <span class="filter-label">Категории</span>
-    <button class="filter-pill active" data-category="all">Все <span class="filter-count"></span></button>
+  <div class="filters" role="group" aria-label="Категории">
+    <span class="filter-label" id="filter-label">Категории</span>
+    <button class="filter-pill active" aria-pressed="true" data-category="all">Все <span class="filter-count"></span></button>
     {categories.map((cat) => (
-      <button class="filter-pill" data-category={cat.slug}>{cat.name} <span class="filter-count"></span></button>
+      <button class="filter-pill" aria-pressed="false" data-category={cat.slug}>{cat.name} <span class="filter-count"></span></button>
     ))}
   </div>
 </div>
@@ -114,8 +114,12 @@ const { categories } = Astro.props
 
     tabs.forEach((tab) => {
       tab.addEventListener('click', () => {
-        tabs.forEach((t) => t.classList.remove('active'))
+        tabs.forEach((t) => {
+          t.classList.remove('active')
+          t.setAttribute('aria-selected', 'false')
+        })
         tab.classList.add('active')
+        tab.setAttribute('aria-selected', 'true')
         activeTab = tab.dataset.tab!
         updateView()
       })
@@ -123,8 +127,12 @@ const { categories } = Astro.props
 
     pills.forEach((pill) => {
       pill.addEventListener('click', () => {
-        pills.forEach((p) => p.classList.remove('active'))
+        pills.forEach((p) => {
+          p.classList.remove('active')
+          p.setAttribute('aria-pressed', 'false')
+        })
         pill.classList.add('active')
+        pill.setAttribute('aria-pressed', 'true')
         activeCategory = pill.dataset.category!
         updateView()
       })
