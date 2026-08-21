@@ -1,5 +1,16 @@
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
+type LexicalNode = {
+  children?: LexicalNode[]
+  fields?: { url?: string }
+  format?: number | string
+  listType?: string
+  tag?: string
+  text?: string
+  type?: string
+  url?: string
+}
+
 export function richTextToHtml(content: SerializedEditorState | null | undefined): string {
   if (!content || !content.root || !content.root.children) return ''
   return content.root.children.map(serializeNode).join('')
@@ -11,12 +22,12 @@ const FMT_STRIKETHROUGH = 1 << 2
 const FMT_UNDERLINE = 1 << 3
 const FMT_CODE = 1 << 4
 
-function serializeNode(node: any): string {
+function serializeNode(node: LexicalNode): string {
   if (!node) return ''
 
   if (node.type === 'text') {
     let text = escapeHtml(node.text || '')
-    const f = node.format | 0
+    const f = typeof node.format === 'number' ? node.format : 0
     if (f & FMT_CODE) text = `<code>${text}</code>`
     if (f & FMT_BOLD) text = `<strong>${text}</strong>`
     if (f & FMT_ITALIC) text = `<em>${text}</em>`
@@ -33,7 +44,7 @@ function serializeNode(node: any): string {
     case 'paragraph':
       return `<p>${children}</p>`
     case 'heading': {
-      const tag = /^h[1-6]$/.test(node.tag) ? node.tag : 'h2'
+      const tag = node.tag && /^h[1-6]$/.test(node.tag) ? node.tag : 'h2'
       return `<${tag}>${children}</${tag}>`
     }
     case 'list': {
@@ -90,7 +101,7 @@ export function richTextToPlainText(content: SerializedEditorState | null | unde
   return extractText(content.root).trim().slice(0, 160)
 }
 
-function extractText(node: any): string {
+function extractText(node: LexicalNode): string {
   if (node.type === 'text') return node.text || ''
   if (node.type === 'linebreak') return ' '
   return (node.children || []).map(extractText).join('')
