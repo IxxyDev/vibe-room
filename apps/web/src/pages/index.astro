@@ -25,6 +25,7 @@ try {
 <Base
   title="Vibe Room"
   description="Коллекция музыкального оборудования и инструментов — гитары, усилители, педали эффектов"
+  canonicalUrl={new URL(Astro.url.pathname, Astro.site).href}
 >
   <CategoryFilter categories={categoryList} />
   <p class="empty-state" id="empty-state" hidden>В этой категории пока ничего нет</p>

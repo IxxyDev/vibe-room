@@ -33,9 +33,19 @@ try {
   console.error('[instrument] Failed to fetch site settings:', error)
 }
 
+type GalleryImage = {
+  url: string
+  alt: string
+  sizes?: {
+    full?: { url: string }
+    card?: { url: string }
+    thumbnail?: { url: string }
+  }
+}
+
 const category = typeof instrument.category === 'object' ? instrument.category : null
 const images = (Array.isArray(instrument.images) ? instrument.images : [])
-  .filter((img): img is Record<string, any> => typeof img === 'object')
+  .filter((img): img is GalleryImage => typeof img === 'object' && typeof img.url === 'string')
 
 const richTextPlain = richTextToPlainText(instrument.description)
 const descriptionText = richTextPlain
@@ -67,6 +77,7 @@ const jsonLd = {
   title={instrument.title}
   description={descriptionText}
   ogImage={ogImage}
+  canonicalUrl={new URL(Astro.url.pathname, Astro.site).href}
   jsonLd={jsonLd}
 >
   <div class="instrument-page">

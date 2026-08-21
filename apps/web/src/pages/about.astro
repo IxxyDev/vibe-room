@@ -18,6 +18,7 @@ const contentHtml = richTextToHtml(about.content)
 <Base
   title="О коллекции"
   description="Vibe Room — коллекция музыкального оборудования и инструментов. Гитары, усилители, педали эффектов."
+  canonicalUrl={new URL(Astro.url.pathname, Astro.site).href}
   activePage="about"
 >
   <div class="about-page">
