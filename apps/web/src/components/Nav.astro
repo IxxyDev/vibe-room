@@ -1,19 +1,16 @@
 ---
-import { getPayloadClient } from '@/lib/payload'
-
-let settings: { telegramUrl?: string; instagramUrl?: string; vkUrl?: string } = {}
-try {
-  const payload = await getPayloadClient()
-  settings = await payload.findGlobal({ slug: 'site-settings' })
-} catch (error) {
-  console.error('[Nav] Failed to fetch site settings:', error)
+interface SiteSettings {
+  telegramUrl?: string
+  instagramUrl?: string
+  vkUrl?: string
 }
 
 interface Props {
   activePage?: 'catalog' | 'about'
+  settings?: SiteSettings
 }
 
-const { activePage = 'catalog' } = Astro.props
+const { activePage = 'catalog', settings = {} } = Astro.props
 ---
 
 <nav class="nav">

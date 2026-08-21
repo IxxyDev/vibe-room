@@ -1,13 +1,15 @@
 ---
-import { getPayloadClient } from '@/lib/payload'
-
-let settings: { telegramUrl?: string; instagramUrl?: string; vkUrl?: string } = {}
-try {
-  const payload = await getPayloadClient()
-  settings = await payload.findGlobal({ slug: 'site-settings' })
-} catch (error) {
-  console.error('[Footer] Failed to fetch site settings:', error)
+interface SiteSettings {
+  telegramUrl?: string
+  instagramUrl?: string
+  vkUrl?: string
 }
+
+interface Props {
+  settings?: SiteSettings
+}
+
+const { settings = {} } = Astro.props
 ---
 
 <footer class="footer">
