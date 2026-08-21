@@ -20,8 +20,14 @@ export default buildConfig({
     client: {
       url: process.env.DATABASE_URL || `file:${path.resolve(process.cwd(), 'data/vibe-room.db')}`,
     },
+    wal: true,
   }),
   editor: lexicalEditor(),
+  upload: {
+    limits: {
+      fileSize: 15 * 1024 * 1024,
+    },
+  },
   collections: [Users, Media, Categories, Instruments],
   globals: [About, SiteSettings],
   typescript: {
