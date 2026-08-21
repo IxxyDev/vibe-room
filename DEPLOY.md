@@ -57,13 +57,9 @@ docker compose logs -f cms
 
 ## 5. HTTPS через Let's Encrypt
 
-Активировать HTTPS-конфиг (заменив домен):
+`nginx` сам выбирает HTTP-only или HTTPS конфиг при каждом старте контейнера (`nginx/entrypoint.sh`): если для `$DOMAIN` есть сертификат — отдаёт `https.conf.template`, иначе — `http.conf.template`. Никаких файлов вручную редактировать не нужно, поэтому `git reset --hard` при следующих деплоях эту настройку не затронет.
 
-```sh
-sed "s/__DOMAIN__/vibe-room.ru/g" nginx/default.https.conf > nginx/default.conf.new
-```
-
-Получить сертификат (заменив домен и email):
+Получить сертификат (заменив email — домен берётся из `.env`):
 
 ```sh
 docker compose run --rm --entrypoint "certbot certonly --webroot -w /var/www/certbot \
@@ -71,10 +67,9 @@ docker compose run --rm --entrypoint "certbot certonly --webroot -w /var/www/cer
   -d vibe-room.ru -d www.vibe-room.ru" certbot
 ```
 
-Подменить конфиг и перезапустить nginx:
+Перезапустить nginx, чтобы он подхватил появившийся сертификат:
 
 ```sh
-mv nginx/default.conf.new nginx/default.conf
 docker compose up -d --force-recreate nginx certbot
 ```
 
